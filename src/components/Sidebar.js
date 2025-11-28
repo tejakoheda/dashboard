@@ -1,11 +1,3 @@
-// src/components/Sidebar.js
-import React from "react";
-
-/**
- * Simple fixed sidebar with a single "Home" item.
- * Props:
- *  - onNavigate(name) optional callback when user clicks an item
- */
 export default function Sidebar({ onNavigate }) {
   const go = (name) => {
     if (typeof onNavigate === "function") onNavigate(name);
@@ -33,6 +25,22 @@ export default function Sidebar({ onNavigate }) {
                 🏠
               </span>
               <span className="sidebar-text">Dashboard</span>
+            </button>
+          </li>
+          <li className="sidebar-item">
+            <button
+              className="sidebar-link btn-plain"
+              onClick={() => go("home")}
+              aria-current={
+                window.location.hash === "#/" || window.location.hash === ""
+                  ? "true"
+                  : "false"
+              }
+            >
+              <span className="sidebar-icon" aria-hidden>
+                🚗
+              </span>
+              <span className="sidebar-text">Rides</span>
             </button>
           </li>
         </ul>

@@ -1,5 +1,4 @@
 // src/components/DaysBarChart.js
-import React from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -23,7 +22,7 @@ export default function DaysBarChart({ data }) {
             <CartesianGrid
               vertical={false}
               strokeDasharray="3 3"
-              stroke="rgba(255,255,255,0.03)"
+              stroke="rgba(6, 231, 119, 0)"
             />
             <XAxis
               dataKey="date"
@@ -35,7 +34,10 @@ export default function DaysBarChart({ data }) {
             />
             <Tooltip
               formatter={(val) => `₹${val.toLocaleString()}`}
-              contentStyle={{ background: "rgba(8,8,8,0.95)", borderRadius: 8 }}
+              contentStyle={{
+                background: "rgba(94, 94, 94, 0.95)",
+                borderRadius: 8,
+              }}
             />
             <Bar dataKey="revenue" fill="#9be15d" radius={[6, 6, 0, 0]} />
           </BarChart>

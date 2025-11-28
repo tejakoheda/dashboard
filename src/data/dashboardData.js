@@ -10,6 +10,11 @@ export const todayMetrics = {
   activeDrivers: rnd(500, 950),
   preActiveDrivers: rnd(80, 260),
   inactiveDrivers: rnd(150, 420),
+  vehiclesOnRoad: rnd(400, 900),
+  consumers: rnd(5000, 15000),
+  tripsCancelled: rnd(20, 80),
+  tripsCompleted: rnd(500, 1400),
+  revenueYesterday: rnd(90000, 100000),
   revenueToday: +(rnd(15000, 85000) + Math.random()).toFixed(2),
 };
 

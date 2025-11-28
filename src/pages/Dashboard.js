@@ -1,11 +1,10 @@
 // src/pages/Dashboard.js
-import React from "react";
 import NavBar from "../components/NavBar";
 import MetricsCard from "../components/MetricsCard";
 import MonthlyBarChart from "../components/MonthlyBarChart";
 import DaysBarChart from "../components/DaysBarChart";
 import Sidebar from "../components/Sidebar";
-
+import VehicleTypes from "../components/VehicleTypes";
 import {
   todayMetrics,
   revenueLast4Months,
@@ -60,9 +59,22 @@ export default function Dashboard() {
                 title="Total Drivers"
                 value={m.totalDrivers}
                 subtitle="Registered drivers"
+                accent="#e8950fff"
+              />
+              <MetricsCard
+                title="Total Vehicles"
+                value={m.vehiclesOnRoad}
+                subtitle="Registered Vehicles"
                 accent="#90e0ef"
               />
+              <MetricsCard
+                title="Total Consumers"
+                value={m.consumers}
+                subtitle="Registered consumers"
+                accent="#00ea04ff"
+              />
             </div>
+            <VehicleTypes />
 
             <div className="panel-row">
               <div className="left-panel">
@@ -70,7 +82,7 @@ export default function Dashboard() {
                 <DaysBarChart data={revenueLast10Days} />
               </div>
 
-              {/* QUICK SUMMARY - replace the white box with this */}
+              {/* QUICK SUMMARY  */}
               <aside className="right-panel card summary-card">
                 <h6 className="summary-title">Quick Summary</h6>
 
@@ -110,6 +122,18 @@ export default function Dashboard() {
                   <div className="bold">
                     {m.inactiveDrivers.toLocaleString()}
                   </div>
+                </div>
+
+                <div className="summary-item">
+                  <div className="muted">vehicles</div>
+                  <div className="bold">
+                    {m.vehiclesOnRoad.toLocaleString()}
+                  </div>
+                </div>
+
+                <div className="summary-item">
+                  <div className="muted">Consumers</div>
+                  <div className="bold">{m.consumers.toLocaleString()}</div>
                 </div>
 
                 <hr
@@ -171,6 +195,32 @@ export default function Dashboard() {
                     revenueLast4Months[0].revenue
                       ? "Increasing ↑"
                       : "Decreasing ↓"}
+                  </div>
+                </div>
+              </aside>
+
+              {/* QUICK SUMMARY   */}
+              <aside className="right-panel card summary-card">
+                <h6 className="summary-title">Yesterday Rides </h6>
+
+                <div className="summary-item">
+                  <div className="muted">Total Trips Completed </div>
+                  <div className="bold">
+                    {m.tripsCompleted.toLocaleString()}
+                  </div>
+                </div>
+
+                <div className="summary-item">
+                  <div className="muted">Total Trips Cancelled</div>
+                  <div className="bold">
+                    {Math.round(m.tripsCancelled).toLocaleString()}
+                  </div>
+                </div>
+
+                <div className="summary-item">
+                  <div className="muted">Revenue </div>
+                  <div className="bold">
+                    ₹{m.revenueYesterday.toLocaleString()}
                   </div>
                 </div>
               </aside>
