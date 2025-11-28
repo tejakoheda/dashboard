@@ -1,5 +1,5 @@
 // src/components/CountUp.js
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Simple animated counter.

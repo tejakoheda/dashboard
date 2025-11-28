@@ -1,5 +1,4 @@
 // src/components/MetricsCard.js
-import React from "react";
 import CountUp from "./CountUp";
 
 /**
