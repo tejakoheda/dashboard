@@ -1,4 +1,5 @@
 // src/components/VehicleTypes.js
+
 export default function VehicleTypes() {
   const types = [
     { name: "Auto", emoji: "🛺", value: 999 },
