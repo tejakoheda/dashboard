@@ -1,4 +1,5 @@
 // src/pages/Dashboard.js
+import { useMemo } from "react";
 import MetricsCard from "../components/MetricsCard";
 import MonthlyBarChart from "../components/MonthlyBarChart";
 import DaysBarChart from "../components/DaysBarChart";
@@ -11,6 +12,32 @@ import {
 
 export default function Dashboard() {
   const m = todayMetrics;
+
+  // Memoize calculations so they don't run on every render
+  const stats = useMemo(() => {
+    const totalRev = revenueLast10Days.reduce((s, r) => s + r.revenue, 0);
+    const totalRides = revenueLast10Days.reduce((s, r) => s + r.rides, 0);
+    const count = revenueLast10Days.length;
+
+    const bestDay = revenueLast10Days.reduce((a, b) =>
+      a.revenue > b.revenue ? a : b
+    );
+    const lowestDay = revenueLast10Days.reduce((a, b) =>
+      a.revenue < b.revenue ? a : b
+    );
+
+    const isRevenueIncreasing =
+      revenueLast4Months[revenueLast4Months.length - 1].revenue >
+      revenueLast4Months[0].revenue;
+
+    return {
+      avgRevenue: Math.round(totalRev / count),
+      avgRides: Math.round(totalRides / count),
+      bestDayDate: bestDay.date,
+      lowestDayDate: lowestDay.date,
+      trend: isRevenueIncreasing ? "Increasing ↑" : "Decreasing ↓",
+    };
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -130,61 +157,31 @@ export default function Dashboard() {
 
           <div className="summary-item">
             <div className="muted">Average Revenue (10 days)</div>
-            <div className="bold">
-              ₹
-              {Math.round(
-                revenueLast10Days.reduce((s, r) => s + r.revenue, 0) /
-                  revenueLast10Days.length
-              ).toLocaleString()}
-            </div>
+            <div className="bold">₹{stats.avgRevenue.toLocaleString()}</div>
           </div>
 
           <div className="summary-item">
             <div className="muted">Average Rides/Day (10d)</div>
-            <div className="bold">
-              {Math.round(
-                revenueLast10Days.reduce((s, r) => s + r.rides, 0) /
-                  revenueLast10Days.length
-              ).toLocaleString()}
-            </div>
+            <div className="bold">{stats.avgRides.toLocaleString()}</div>
           </div>
 
           <div className="summary-item">
             <div className="muted">Best Day (10d)</div>
-            <div className="bold">
-              {(() => {
-                const best = revenueLast10Days.reduce((a, b) =>
-                  a.revenue > b.revenue ? a : b
-                );
-                return best.date;
-              })()}
-            </div>
+            <div className="bold">{stats.bestDayDate}</div>
           </div>
 
           <div className="summary-item">
             <div className="muted">Lowest Day (10d)</div>
-            <div className="bold">
-              {(() => {
-                const low = revenueLast10Days.reduce((a, b) =>
-                  a.revenue < b.revenue ? a : b
-                );
-                return low.date;
-              })()}
-            </div>
+            <div className="bold">{stats.lowestDayDate}</div>
           </div>
 
           <div className="summary-item">
             <div className="muted">Monthly Revenue Trend</div>
-            <div className="bold">
-              {revenueLast4Months[revenueLast4Months.length - 1].revenue >
-              revenueLast4Months[0].revenue
-                ? "Increasing ↑"
-                : "Decreasing ↓"}
-            </div>
+            <div className="bold">{stats.trend}</div>
           </div>
         </aside>
 
-        {/* YESTERDAY SUMMARY (Renamed the title in code from "Yesterday Rides" to match previous section context if needed, but keeping logic same) */}
+        {/* YESTERDAY SUMMARY */}
         <aside className="right-panel card summary-card">
           <h6 className="summary-title">Yesterday Rides </h6>
 
