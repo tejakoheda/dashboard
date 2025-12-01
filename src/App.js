@@ -10,6 +10,10 @@ import Layout from "./components/Layout";
 // Lazy load data-heavy pages (Code Splitting)
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const DriversPage = lazy(() => import("./pages/DriversPage"));
+const DriverOnboarding = lazy(() => import("./pages/DriverOnboarding"));
+const ManualVerification = lazy(() => import("./pages/ManualVerification"));
+const AutoVerification = lazy(() => import("./pages/AutoVerification"));
+const DriverFeedback = lazy(() => import("./pages/DriverFeedback"));
 
 // Simple loading spinner component
 const Loading = () => (
@@ -227,7 +231,19 @@ export default function App() {
           }
         >
           <Route path="/" element={<Dashboard />} />
+
+          {/* Driver Sub-routes */}
           <Route path="/drivers" element={<DriversPage />} />
+          <Route path="/drivers/onboarding" element={<DriverOnboarding />} />
+          <Route
+            path="/drivers/manual-verification"
+            element={<ManualVerification />}
+          />
+          <Route
+            path="/drivers/auto-verification"
+            element={<AutoVerification />}
+          />
+          <Route path="/drivers/feedback" element={<DriverFeedback />} />
         </Route>
 
         {/* Catch-all */}
