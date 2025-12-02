@@ -1,0 +1,35 @@
+/* src/pages/DriverPages/drivers.css */
+
+/* Specific styling for Driver Management pages */
+.driver-page-container {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Example of scoped card styling for driver pages */
+.driver-card {
+  border-left: 4px solid #FFCE54; /* Matches the dashboard accent */
+}
+
+.verification-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-pending {
+  background: rgba(255, 206, 84, 0.2);
+  color: #FFCE54;
+}
+
+.badge-verified {
+  background: rgba(122, 245, 154, 0.2);
+  color: #7af59a;
+}
+

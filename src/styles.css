@@ -161,7 +161,7 @@ body{
   padding: 10px;
   display: flex;
   align-items: center;
-  /* justify-content: space-between; <-- REMOVED this to fix Dashboard button */
+  /* justify-content: space-between; <-- REMOVED this to fix Dashboard button alignment */
   gap: 12px;
   border-radius: 8px;
   color: rgba(255,255,255,0.95);

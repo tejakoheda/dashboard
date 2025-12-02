@@ -1,3 +1,4 @@
+// src/components/Sidebar.js
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -37,9 +38,7 @@ export default function Sidebar() {
               <span className="sidebar-icon" aria-hidden>
                 🏠
               </span>
-              <center>
-                <span className="sidebar-text">Dashboard</span>
-              </center>
+              <span className="sidebar-text">Dashboard</span>
             </button>
           </li>
 
