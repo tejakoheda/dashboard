@@ -1,5 +1,4 @@
 // src/components/MonthlyBarChart.js
-import React from "react";
 import {
   ResponsiveContainer,
   BarChart,
