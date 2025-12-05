@@ -1,5 +1,5 @@
 // src/components/VehicleTypes.js
-
+import CountUp from "./CountUp";
 export default function VehicleTypes() {
   const types = [
     { name: "Auto", emoji: "🛺", value: 999 },
@@ -24,7 +24,10 @@ export default function VehicleTypes() {
               <b>{t.name}</b>
             </span>
             <br />
-            <span className="vehicle-value">{t.value}</span>
+
+            <span className="vehicle-value">
+              <CountUp end={t.value} duration={1.2} />
+            </span>
           </div>
         ))}
       </div>

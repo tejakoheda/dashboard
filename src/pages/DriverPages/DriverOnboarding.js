@@ -1,5 +1,7 @@
 // src/pages/DriverPages/DriverOnboarding.js
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useDriverContext } from "../../context/DriverContext"; // Import Context
 import "./DriverOnboarding.css";
 
 export default function DriverOnboarding() {
@@ -10,24 +12,39 @@ export default function DriverOnboarding() {
     formState: { errors },
   } = useForm();
 
-  // Watch for referral checkbox to conditionally render the input
+  const navigate = useNavigate();
+  const { addDriver } = useDriverContext(); // Use Context
   const hasReferral = watch("hasReferral");
 
   const onSubmit = (data) => {
-    console.log("Onboarding Data:", data);
+    // Process files: Convert FileList to Object URL for preview in this demo
+    const processedData = { ...data };
+    const fileFields = [
+      "selfie",
+      "vehicleImage",
+      "dlFront",
+      "dlBack",
+      "aadharFront",
+      "aadharBack",
+      "panFront",
+      "panBack",
+      "rcFront",
+      "rcBack",
+    ];
 
-    const formData = new FormData();
-    Object.keys(data).forEach((key) => {
-      // If it's a file list (from file input), append the first file
-      if (data[key] instanceof FileList && data[key].length > 0) {
-        formData.append(key, data[key][0]);
+    fileFields.forEach((field) => {
+      if (data[field] && data[field].length > 0) {
+        processedData[field] = URL.createObjectURL(data[field][0]);
       } else {
-        formData.append(key, data[key]);
+        processedData[field] = null;
       }
     });
 
-    // TODO: Send formData to your backend endpoint
-    alert("Driver application submitted successfully!");
+    // Save to global context
+    addDriver(processedData);
+
+    alert("Application Submitted! Redirecting to verification...");
+    navigate("/drivers/manual-verification");
   };
 
   return (
@@ -62,7 +79,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.firstName.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Last Name</label>
               <input
@@ -77,7 +93,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.lastName.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Gender</label>
               <select
@@ -92,7 +107,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.gender.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Phone Number</label>
               <input
@@ -111,7 +125,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.phone.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Email Address</label>
               <input
@@ -130,7 +143,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.email.message}</span>
               )}
             </div>
-
             <div className="form-group full-width">
               <label className="form-label">Driver Selfie</label>
               <input
@@ -166,7 +178,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.houseNo.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Street / Area</label>
               <input
@@ -178,7 +189,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.street.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">City</label>
               <input
@@ -190,7 +200,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.city.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">District</label>
               <input
@@ -204,7 +213,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.district.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Pin Code</label>
               <input
@@ -222,7 +230,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.pinCode.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">State</label>
               <input
@@ -264,7 +271,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.vehicleType.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Fuel Type</label>
               <select
@@ -283,7 +289,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.fuelType.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Registration Number</label>
               <input
@@ -299,7 +304,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.regNumber.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">RC Valid Till</label>
               <input
@@ -315,7 +319,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.rcExpiry.message}</span>
               )}
             </div>
-
             <div className="form-group full-width">
               <label className="form-label">Vehicle Image (Front)</label>
               <input
@@ -366,7 +369,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.dlBack.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Aadhar Front</label>
               <input
@@ -391,7 +393,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.aadharBack.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">PAN Front</label>
               <input
@@ -416,7 +417,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.panBack.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">RC Front</label>
               <input
@@ -464,7 +464,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.bankName.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Account Number</label>
               <input
@@ -482,7 +481,6 @@ export default function DriverOnboarding() {
                 </span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">IFSC Code</label>
               <input
@@ -494,7 +492,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.ifsc.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label className="form-label">Branch Name</label>
               <input
@@ -506,7 +503,6 @@ export default function DriverOnboarding() {
                 <span className="error-msg">{errors.branch.message}</span>
               )}
             </div>
-
             <div className="form-group full-width">
               <label className="form-label">UPI ID</label>
               <input
@@ -527,7 +523,6 @@ export default function DriverOnboarding() {
             <div className="section-number">6</div>
             <h3 className="section-title">Referral (Optional)</h3>
           </div>
-
           <label className="checkbox-group">
             <input
               type="checkbox"
@@ -536,7 +531,6 @@ export default function DriverOnboarding() {
             />
             <span className="checkbox-label">I have a Referral Code</span>
           </label>
-
           {hasReferral && (
             <div
               className="form-group mt-3"

@@ -1,14 +1,304 @@
-// src/pages/ManualVerification.js
+// src/pages/DriverPages/ManualVerification.js
+import { useState } from "react";
+import DataTable from "react-data-table-component";
+import { useDriverContext } from "../../context/DriverContext";
+import "./drivers.css";
+
+// Shared Table Styles
+export const glassTableStyles = {
+  table: { style: { backgroundColor: "transparent" } },
+  headRow: {
+    style: {
+      backgroundColor: "rgba(15, 23, 42, 0.6)",
+      color: "#94a3b8",
+      fontWeight: "700",
+      fontSize: "0.85rem",
+      textTransform: "uppercase",
+      letterSpacing: "1px",
+      borderBottom: "1px solid rgba(255,255,255,0.1)",
+    },
+  },
+  rows: {
+    style: {
+      backgroundColor: "transparent",
+      color: "#f1f5f9",
+      fontSize: "0.95rem",
+      minHeight: "60px",
+      borderBottom: "1px solid rgba(255,255,255,0.05)",
+      "&:hover": {
+        backgroundColor: "rgba(255, 255, 255, 0.03) !important",
+        cursor: "default",
+      },
+    },
+  },
+  pagination: {
+    style: {
+      backgroundColor: "transparent",
+      color: "#cbd5e1",
+      borderTop: "1px solid rgba(255,255,255,0.1)",
+      fontSize: "0.85rem",
+    },
+    pageButtonsStyle: {
+      color: "#38bff8",
+      fill: "#38bff8",
+      backgroundColor: "transparent",
+      "&:disabled": {
+        color: "#475569",
+        fill: "#475569",
+      },
+      "&:hover:not(:disabled)": {
+        backgroundColor: "rgba(56, 191, 248, 0)",
+      },
+    },
+  },
+};
+
 export default function ManualVerification() {
-  return (
-    <div className="dashboard-container">
-      <h2 className="page-title">Manual Verification</h2>
-      <div className="card p-4 glass-card">
-        <p>Review documents and manually verify driver details here.</p>
-        <div className="alert alert-info mt-3">
-          No pending documents to verify.
+  const { drivers, verifyDriver, rejectDriver } = useDriverContext();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDocs, setSelectedDocs] = useState(null);
+  const [expandedImage, setExpandedImage] = useState(null);
+
+  const filteredDrivers = drivers.filter(
+    (d) =>
+      d.status === "pending" &&
+      (d.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        d.phone.includes(searchTerm) ||
+        d.city.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const ImageViewer = () => {
+    if (!expandedImage) return null;
+    return (
+      <div
+        className="image-viewer-overlay"
+        onClick={() => setExpandedImage(null)}
+      >
+        <div
+          className="image-viewer-content"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            className="close-image-btn"
+            onClick={() => setExpandedImage(null)}
+          >
+            ✕
+          </button>
+          <img
+            src={expandedImage}
+            alt="Full Size"
+            className="full-size-image"
+          />
         </div>
       </div>
+    );
+  };
+
+  const DocumentModal = ({ driver, onClose }) => {
+    if (!driver) return null;
+    return (
+      <div className="doc-modal-overlay" onClick={onClose}>
+        <div className="doc-modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header-custom">
+            <h3>
+              Documents: {driver.firstName} {driver.lastName}
+            </h3>
+            <button className="close-btn" onClick={onClose}>
+              &times;
+            </button>
+          </div>
+
+          <div className="doc-grid">
+            {[
+              "selfie",
+              "vehicleImage",
+              "dlFront",
+              "dlBack",
+              "aadharFront",
+              "aadharBack",
+              "panFront",
+              "panBack",
+            ].map((field) => (
+              <div key={field} className="doc-item">
+                <span className="doc-label">
+                  {field.replace(/([A-Z])/g, " $1").trim()}
+                </span>
+                {driver[field] ? (
+                  <img
+                    src={driver[field]}
+                    alt={field}
+                    className="doc-img-preview"
+                    onClick={() => setExpandedImage(driver[field])}
+                    title="Click to zoom"
+                  />
+                ) : (
+                  <div
+                    style={{
+                      padding: "40px",
+                      color: "#555",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    No File
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="modal-actions">
+            <button
+              className="btn-reject"
+              onClick={() => {
+                rejectDriver(driver.id);
+                onClose();
+              }}
+            >
+              Reject
+            </button>
+            <button
+              className="btn-verify"
+              onClick={() => {
+                verifyDriver(driver.id);
+                onClose();
+              }}
+            >
+              Verify & Approve
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const columns = [
+    {
+      name: "Driver Name",
+      selector: (row) => row.firstName,
+      allowOverflow: true, // Fix for popup clipping
+      cell: (row) => (
+        <div className="name-cell-container">
+          <span className="driver-name-text">
+            {row.firstName} {row.lastName}
+          </span>
+          <div className="hover-popup">
+            <div className="popup-header">Details</div>
+            <p>
+              <strong>Email:</strong> {row.email}
+            </p>
+            <p>
+              <strong>Gender:</strong> {row.gender}
+            </p>
+            <div
+              style={{
+                height: "1px",
+                background: "rgba(255,255,255,0.1)",
+                margin: "8px 0",
+              }}
+            ></div>
+            <div className="popup-header">Address</div>
+            <p>
+              {row.houseNo}, {row.street}
+            </p>
+            <p>
+              {row.city}, {row.district}
+            </p>
+            <p style={{ color: "#94a3b8", fontSize: "0.8rem" }}>
+              {row.state} - {row.pinCode}
+            </p>
+          </div>
+        </div>
+      ),
+      sortable: true,
+      grow: 1.5,
+    },
+    { name: "Mobile", selector: (row) => row.phone, sortable: true },
+    { name: "City", selector: (row) => row.city, sortable: true },
+    {
+      name: "Applied On",
+      selector: (row) => row.submittedAt,
+      sortable: true,
+      right: true,
+    },
+    {
+      name: "Documents",
+      cell: (row) => (
+        <button className="btn-view-docs" onClick={() => setSelectedDocs(row)}>
+          Verify Docs
+        </button>
+      ),
+      ignoreRowClick: true,
+      button: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div className="action-buttons">
+          <button
+            className="btn-verify-sm"
+            onClick={() => verifyDriver(row.id)}
+            title="Verify"
+          >
+            ✓
+          </button>
+          <button
+            className="btn-reject-sm"
+            onClick={() => rejectDriver(row.id)}
+            title="Reject"
+          >
+            ✕
+          </button>
+        </div>
+      ),
+      right: true,
+    },
+  ];
+
+  return (
+    <div className="driver-page-container">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "10px",
+        }}
+      >
+        <h2 className="page-title">Manual Verification</h2>
+        <div className="search-container" style={{ margin: 0 }}>
+          <input
+            type="text"
+            placeholder="Search applications..."
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="glass-table-card">
+        <DataTable
+          columns={columns}
+          data={filteredDrivers}
+          pagination
+          customStyles={glassTableStyles}
+          highlightOnHover
+          responsive
+          noDataComponent={
+            <div style={{ padding: "20px", color: "#fff" }}>
+              No pending verifications found.
+            </div>
+          }
+        />
+      </div>
+
+      {selectedDocs && (
+        <DocumentModal
+          driver={selectedDocs}
+          onClose={() => setSelectedDocs(null)}
+        />
+      )}
+      <ImageViewer />
     </div>
   );
 }

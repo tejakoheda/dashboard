@@ -1,17 +1,14 @@
 // src/App.js
 import { useEffect, Suspense, lazy } from "react";
 import { useKeycloak } from "@react-keycloak/web";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { DriverProvider } from "./context/DriverContext"; // Import Provider
 
-// Eager load the Login page (critical path)
 import LoginPage from "./pages/LoginPage/LoginPage";
 import Layout from "./components/Layout";
 import Loading from "./pages/LoadingPage";
 
-// Lazy load Dashboard
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-
-// Lazy load Driver Pages from the new 'DriverPages' folder
 const DriversPage = lazy(() => import("./pages/DriverPages/DriverList"));
 const DriverOnboarding = lazy(() =>
   import("./pages/DriverPages/DriverOnboarding")
@@ -23,6 +20,14 @@ const AutoVerification = lazy(() =>
   import("./pages/DriverPages/AutoVerification")
 );
 const DriverFeedback = lazy(() => import("./pages/DriverPages/DriverFeedback"));
+
+const RequireRole = ({ role }) => {
+  const { keycloak } = useKeycloak();
+  if (!keycloak.hasRealmRole(role)) {
+    return <Navigate to="/" replace />;
+  }
+  return <Outlet />;
+};
 
 export default function App() {
   const { keycloak, initialized } = useKeycloak();
@@ -36,50 +41,52 @@ export default function App() {
     return () => window.removeEventListener("message", listener);
   }, []);
 
-  if (!initialized) {
-    return <Loading />;
-  }
+  if (!initialized) return <Loading />;
 
   return (
-    <Suspense fallback={<Loading />}>
-      <Routes>
-        {/* Public Route */}
-        <Route
-          path="/login"
-          element={
-            keycloak.authenticated ? <Navigate to="/" replace /> : <LoginPage />
-          }
-        />
-
-        {/* Protected Routes (wrapped in Layout) */}
-        <Route
-          element={
-            keycloak.authenticated ? (
-              <Layout />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        >
-          <Route path="/" element={<Dashboard />} />
-
-          {/* Driver Sub-routes */}
-          <Route path="/drivers" element={<DriversPage />} />
-          <Route path="/drivers/onboarding" element={<DriverOnboarding />} />
+    <DriverProvider>
+      <Suspense fallback={<Loading />}>
+        <Routes>
           <Route
-            path="/drivers/manual-verification"
-            element={<ManualVerification />}
+            path="/login"
+            element={
+              keycloak.authenticated ? (
+                <Navigate to="/" replace />
+              ) : (
+                <LoginPage />
+              )
+            }
           />
           <Route
-            path="/drivers/auto-verification"
-            element={<AutoVerification />}
-          />
-          <Route path="/drivers/feedback" element={<DriverFeedback />} />
-        </Route>
-
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Suspense>
+            element={
+              keycloak.authenticated ? (
+                <Layout />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          >
+            <Route path="/" element={<Dashboard />} />
+            <Route element={<RequireRole role="driver_manager" />}>
+              <Route path="/drivers" element={<DriversPage />} />
+              <Route
+                path="/drivers/onboarding"
+                element={<DriverOnboarding />}
+              />
+              <Route
+                path="/drivers/manual-verification"
+                element={<ManualVerification />}
+              />
+              <Route
+                path="/drivers/auto-verification"
+                element={<AutoVerification />}
+              />
+              <Route path="/drivers/feedback" element={<DriverFeedback />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </DriverProvider>
   );
 }
